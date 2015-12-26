@@ -1,7 +1,7 @@
 #!/bin/bash
 
-PUSHOVER_USER=$(awk '{print $1}' ~/.pushoverCreds)
-PUSHOVER_TOKEN=$(awk '{print $2}' ~/.pushoverCreds)
+PUSHOVER_USER=$(awk '{print $1}' ~/.creds/pushover)
+PUSHOVER_TOKEN=$(awk '{print $2}' ~/.creds/pushover)
 
 curl -s \
   -F "token=$PUSHOVER_TOKEN" \
