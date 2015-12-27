@@ -1,6 +1,6 @@
 #!/bin/bash
 
-declare -a dependencies=("awesome" "xclip" "parcellite" "rxvt-unicode-256color" "terminus")
+declare -a dependencies=("awesome" "xclip" "parcellite" "rxvt-unicode-256color")
 
 for i in "${dependencies[@]}"
 do
@@ -10,7 +10,7 @@ do
   fi
 done;
 
-rm /usr/share/awesome/themes/default/theme.lua
+rm -f /usr/share/awesome/themes/default/theme.lua
 sudo ln -s ~/0/theme.lua /usr/share/awesome/themes/default/theme.lua
 
 mkdir -p ~/.config/awesome
