@@ -1,6 +1,6 @@
 #!/bin/bash
 
-declare -a dependencies=("dnsutils" "gnupg" "htop" "irssi" "jq" "oathtool" "openssl" "screen" "tesseract-ocr" "tesseract-ocr-eng" "tmux" "vim" "w3m" "wget" "whois" "wikipedia2text")
+declare -a dependencies=("dnsutils" "gnupg" "htop" "irssi" "jq" "knockd" "oathtool" "openssl" "screen" "tesseract-ocr" "tesseract-ocr-eng" "tmux" "vim" "w3m" "wget" "whois" "wikipedia2text")
 
 for i in "${dependencies[@]}"
 do
