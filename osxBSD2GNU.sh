@@ -21,12 +21,11 @@ if [[ "$unameout" == 'Darwin' ]]; then
     echo -n '√'
   fi
   ### bashrc or bash_profile check for coreutils path prefix
-  if [[ $(grep -c 'export PATH="$(brew --prefix coreutils)/libexec/gnubin:/usr/local/bin:$PATH"' ~/.bashrc) == 0 ]]; then
-      if [[ $(grep -c 'export PATH="$(brew --prefix coreutils)/libexec/gnubin:/usr/local/bin:$PATH"' ~/.bash_profile) == 0 ]]; then
-        echo ''
-        echo 'Path for brew coreutils prefix missing from ~/.bashrc or ~/.bash_profile'
-        exit 126
-      fi  
+  if [[ $(grep -c 'export PATH="$(brew --prefix coreutils)/libexec/gnubin:/usr/local/bin:$PATH"' ~/.bash_profile) == 0 ]]; then
+    echo ''
+    echo 'Path for brew coreutils prefix missing from ~/.bash_profile. Adding it now'
+    sleep 2
+    echo 'export PATH="$(brew --prefix coreutils)/libexec/gnubin:/usr/local/bin:$PATH"' >> ~/.bash_profile
   else
     echo -n '√'
   fi
