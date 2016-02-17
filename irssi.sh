@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CPUS=$(($(cat /proc/cpuinfo | grep processor | wc -l)+1))
+CPUS=$(($(grep -c processor /proc/cpuinfo)+1))
 
 sudo apt-get install irssi-dev
 sudo apt-get install libloudmouth1-dev 

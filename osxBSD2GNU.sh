@@ -41,13 +41,13 @@ if [[ "$unameout" == 'Darwin' ]]; then
   ## GNU dependency checks
   for i in "${gnuDependencies[@]}"
   do
-    if ! brew list $i 2>/dev/null > /dev/null; then
+    if ! brew list "$i" 2>/dev/null > /dev/null; then
       echo ''
-      echo -e "$i is not installed. Install it? (y/n) \c"
+      echo -e "${i} is not installed. Install it? (y/n) \c"
       read RESPONSE
       if [[ "$RESPONSE" == y ]]
       then
-        brew install $i
+        brew install "$i"
       elif [[ "$RESPONSE" == n ]]
       then
         echo 'exiting script'

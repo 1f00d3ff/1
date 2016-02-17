@@ -4,9 +4,9 @@ declare -a dependencies=("awesome" "xclip" "parcellite" "rxvt-unicode-256color")
 
 for i in "${dependencies[@]}"
 do
-  if ! dpkg -l $i > /dev/null
+  if ! type -p "$i" > /dev/null
   then
-  sudo apt-get install $i -y
+  sudo apt-get install "$i" -y
   fi
 done;
 
@@ -25,10 +25,10 @@ else
   echo 'awesome dir - check'
 fi
 
-XDG_RC_LUA=$(cat /etc/xdg/awesome/rc.lua | sha256sum | awk '{print $1}')
-GIT_RC_LUA=$(cat ~/0/rc.orig | sha256sum | awk '{print $1}')
+XDG_RC_LUA=$(sha256sum /etc/xdg/awesome/rc.lua | awk '{print $1}')
+GIT_RC_LUA=$(sha256sum ~/0/rc.orig | awk '{print $1}')
 
-if [[ $XDG_RC_LUA == $GIT_RC_LUA ]]; then
+if [[ ${XDG_RC_LUA} == ${GIT_RC_LUA} ]]; then
   if [ ! -L ~/.config/awesome/rc.lua ]; then
     echo 'creating rc.lua symlink'
     #sudo ln -s ~/0/rc.lua ~/.config/awesome/rc.lua
