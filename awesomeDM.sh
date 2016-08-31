@@ -40,9 +40,11 @@ else
   sudo cp /etc/xdg/awesome/rc.lua ~/0/rc.new
   BLANKLINE=$(grep -En '(^$)' /etc/xdg/awesome/rc.lua | head -n 1 | sed 's/://')
   echo "injecting parcellite into rc.lua at line $BLANKLINE"
-  sudo cp /etc/xdg/awesome/rc.lua ~/.config/awesome/rc.muahaha
-  sed -i "${BLANKLINE}iawful.util.spawn_with_shell(parcellite &)" ~/.config/awesome/rc.muahaha
-  sed -i 's/parcellite &/"parcellite &"/g' ~/.config/awesome/rc.muahaha
+  sudo cp /etc/xdg/awesome/rc.lua ~/.config/awesome/rc.lua
+  sed -i "${BLANKLINE}iawful.util.spawn_with_shell(parcellite &)" ~/.config/awesome/rc.lua
+	sed -i "${BLANKLINE}iawful.util.spawn_with_shell(syndaemon -i 0.250 -K -R &)" ~/.config/awesome/rc.lua
+  sed -i 's/parcellite &/"parcellite &"/g' ~/.config/awesome/rc.lua
+  sed -i 's/syndaemon -i 0.250 -K -R &/"syndaemon -i 0.250 -K -R &"/g' ~/.config/awesome/rc.lua
 fi
 
 sudo update-alternatives --set x-terminal-emulator /usr/bin/urxvt
