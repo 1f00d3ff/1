@@ -25,10 +25,10 @@ user_check(){
 	username="${1}"
 	declare -g USERS=()
 	if [[ $(ls ${username} 2> /dev/null) ]]; then
-		echo 'Adding list of users to array'
 		declare -g USERS=( $(cat "${username}") )
+		echo "Adding ${#USERS[@]} users to array"
 	else
-		echo 'Adding single user to array'
+		echo 'Adding 1 user to array'
 		USERS+=("${username}")	
 	fi
 }
@@ -41,6 +41,7 @@ password_list_check(){
 		IFS='
 		'
 		declare -g PASSWORDS=( $(cat "${password_list_check}") )
+		echo "Adding ${#PASSWORDS[@]} passwords to array"
 	fi
 }
 
@@ -49,15 +50,15 @@ ip_check(){
 	ip="${1}"
 	declare -g IPS=()
 	if [[ "${ip}" =~ ${CIDR_REGEX} ]]; then
-		echo 'CIDR detected. Building Array'
 		declare -g IPS=( $(nmap -p T:22 "${ip}" | grep -B3 'tcp open' | grep -Eo "${IP_REGEX}") )
+		echo "nmap scan found ${#IPS[@]} IPs with ssh open"
 	else
 		if ! [[ "${ip}" =~ ${IP_REGEX} ]]; then
 			echo "${ip} is not a valid IP or CIDR address"
 			exit 26
 		else
-			echo 'Individual IP detected'
 			IPS+=("${ip}")
+			echo 'Adding 1 IP to array'
 		fi
 	fi
 	echo ''
