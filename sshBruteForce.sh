@@ -16,7 +16,7 @@ USER="${1}"
 LIST="${2}"
 IP="${3}"
 IP_REGEX='(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
-
+CIDR_REGEX='(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))'
 
 user_check(){
 	local username
@@ -41,16 +41,24 @@ password_list_check(){
 ip_check(){
 	local ip
 	ip="${1}"
-	if ! [[ "${ip}" =~ ${IP_REGEX} ]]; then
-		echo "${ip} is not a valid IP address"
-		exit 26
+	declare -g IPS=()
+	if [[ "${ip}" =~ ${CIDR_REGEX} ]]; then
+		echo 'fire the nmap'
+		declare -g IPS=( $(nmap -p T:22 "${ip}" | grep -B3 'tcp open' | grep -Eo "${IP_REGEX}") )
+	else
+		if ! [[ "${ip}" =~ ${IP_REGEX} ]]; then
+			echo "${ip} is not a valid IP or CIDR address"
+			exit 26
+		else
+			echo 'adding ip to array'
+			IPS+=("${ip}")
+		fi
 	fi
 }
 
-	
 
 dep_check(){
-	declare -a dependencies=("ssh" "sshpass")
+	declare -a dependencies=("nmap" "ssh" "sshpass")
 	for i in "${dependencies[@]}"; do
 		if [[ $(dpkg -l "${i}" > /dev/null) ]]; then
 			sudo apt-get install "${i}" -y
@@ -73,5 +81,10 @@ sshpass_iterations(){
 user_check "${USER}"
 password_list_check "${LIST}"
 ip_check "${IP}"
-dep_check
-sshpass_iterations "${USER}" "${IP}"
+
+for ip in ${IPS[@]}; do
+	echo "${ip}"
+done	
+
+#dep_check
+#sshpass_iterations "${USER}" "${IP}"
