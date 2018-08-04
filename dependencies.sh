@@ -2,7 +2,7 @@
 
 ./update.sh
 
-declare -a dependencies=("build-essential" "dnsutils" "espeak" "gnupg" "htop" "imagemagick" "irssi" "jq" "knockd" "kpcli" "libterm-readline-gnu-perl" "ntp" "oathtool" "openssl" "openvpn" "rhash" "screen" "tesseract-ocr" "tesseract-ocr-eng" "tmux" "vim" "w3m" "wget" "whois" "wikipedia2text")
+declare -a dependencies=("apt-transport-https" "build-essential" "dnsutils" "espeak" "gnupg-agent" "gnupg2" "haveged" "htop" "imagemagick" "irssi" "jq" "knockd" "kpcli" "libccid" "libevent-dev" "libksba8" "libpth20" "libssl-dev" "nmap" "ntp" "oathtool" "opensc" "openssl" "openvpn" "paperkey" "pass" "pcscd" "pinentry-curses" "rhash" "scdaemon" "screen" "shellcheck" "transmission-cli" "tmux" "vim" "w3m" "wget" "whois" "wikipedia2text")
 
 for i in "${dependencies[@]}"
 do
@@ -12,7 +12,11 @@ do
 done
 
 
-declare -a dotfiles=("bashrc" "curlrc" "inputrc" "tmux.conf" "vimrc")
+declare -a dotfiles=("bashrc"\
+"curlrc"\
+"inputrc"\
+"tmux.conf"\
+"vimrc")
 
 if [ -d ~/0/ ]; then
   for i in "${dotfiles[@]}"; do
